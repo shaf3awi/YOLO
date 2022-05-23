@@ -1,0 +1,83 @@
+import os
+import json
+from datetime import datetime
+from statistics import mean
+import argparse
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+import torch
+import torch.optim as optim
+from torch.autograd import Variable
+import torch.nn.functional as F
+import torch
+import torch.nn as nn
+import torch.nn.init as init
+import pandas as pd
+s=pd.read_csv(r'C:\Users\elshaa6\Desktop\PHD\hesham\facial landmarks.csv', header=None, nrows=122)
+s.head
+s.columns = ['gaze','frames']
+s.head
+import numpy as np
+s.index = np.arange(1, len(s)+1)
+data_frame=pd.read_csv(r'C:\Users\elshaa6\Desktop\PHD\hesham\export_dataframe.csv', nrows=598)
+data_frame.head
+data_frame=data_frame.loc[data_frame.index.repeat(data_frame.frames)]
+data_frame.head
+data_frame.index = np.arange(1, len(data_frame)+1)
+data_frame.head
+gaze=pd.read_csv(r'C:\Users\elshaa6\Desktop\PHD\hesham\gaze.csv', nrows=598)
+
+gaze.head
+gaze.index = np.arange(1, len(gaze)+1)
+gaze.head
+gaze['filename'].loc[1:9] ='0' + '0'+ gaze['filename'].astype(str) + '.jpg'
+
+print(gaze)
+
+
+gaze['filename'].loc[10:99] ='0'+gaze['filename'].astype(str)+ '.jpg'
+
+print(gaze)
+
+
+gaze['filename'].loc[100:598] =gaze['filename'].astype(str)+ '.jpg'
+
+print(gaze)
+
+gaze.to_csv (r'C:\Users\elshaa6\Desktop\PHD\hesham\gaze2.csv', index = True, header=True)
+
+
+
+
+
+
+class CustomDataset(torch.utils.data.Dataset):
+    def __init__(self, csv_path, images_folder, transform = None):
+        self.df = pd.read_csv(csv_path)
+        self.images_folder = images_folder
+        self.transform = transform
+        self.label = ['center', 'in car', 'left', 'right', 'up', 'down', 'up-left', 'up-right', 'down-left', 'down-right', 'outside right', 'outside left']
+
+    def __len__(self):
+        return len(self.df)
+    def __getitem__(self, index):
+        filename,label= self.df.loc[index]
+        #filename = self.df[[index, "filename"]]
+        #label = self.label[self.df[index, "label"]]
+        image = PIL.Image.open(os.path.join(self.images_folder, filename))
+        if self.transform is not None:
+            image = self.transform(image)
+        return image, label
+        
+        
+train_dataset = CustomDataset(r"C:\Users\elshaa6\Desktop\PHD\hesham\gaze2.csv", r"C:\Users\elshaa6\Desktop\PHD\hesham\madinet nasr - 3"  )
+
+
+import PIL
+for image in train_dataset:
+    plt.imshow(image)
+    plt.title(label)
+    plt.show()
+    plt.pause(1)
